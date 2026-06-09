@@ -1,6 +1,6 @@
 # lunarlander-dqn-ddqn
 
-Comparing DQN and DDQN agents on LunarLander-v3 — experience replay, target networks, Q-value analysis, and hyperparameter sensitivity study using PyTorch and Gymnasium.
+Comparing DQN and DDQN agents on LunarLander-v3 - experience replay, target networks, Q-value analysis, and hyperparameter sensitivity study using PyTorch and Gymnasium.
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?logo=pytorch)](https://pytorch.org/)
@@ -13,8 +13,8 @@ Comparing DQN and DDQN agents on LunarLander-v3 — experience replay, target ne
 
 This project implements and compares two value-based deep reinforcement learning algorithms on the LunarLander-v3 environment:
 
-- **DQN** (Mnih et al., 2015) — the standard baseline with experience replay and a hard-updated target network
-- **DDQN** (Van Hasselt, Guez & Silver, 2016) — a two-line change to DQN that decouples action *selection* from action *evaluation*, eliminating the maximisation bias responsible for Q-value overestimation
+- **DQN** (Mnih et al., 2015) - the standard baseline with experience replay and a hard-updated target network
+- **DDQN** (Van Hasselt, Guez & Silver, 2016) - a two-line change to DQN that decouples action *selection* from action *evaluation*, eliminating the maximisation bias responsible for Q-value overestimation
 
 The central question is whether that two-line change produces a measurably better agent given identical hyperparameters, architecture, and random seeds.
 
@@ -24,25 +24,27 @@ The central question is whether that two-line change produces a measurably bette
 
 Each video is a 20-second MP4 showing the agent playing greedily at 10 checkpoints across 1000 training episodes (ep 100, 200, … 1000). Every frame is labelled with the agent name, episode number, and cumulative reward.
 
-### DQN — `videos/dqn_timelapse.mp4`
+### DQN - `videos/dqn_timelapse.mp4`
+<video src="https://github.com/prakadeesh01/lunarlander-dqn-ddqn/raw/main/videos/dqn_timelapse.mp4" controls width="700"></video>
 
-The DQN timelapse opens with the lander in full chaos: at episode 100 the agent has barely moved past random behaviour, immediately firing the main engine at the wrong angle and slamming into the ground within a few seconds. Rewards are deep in the negatives, often around −150 to −200. By episode 200–300 something clicks — the agent learns to at least stay airborne, making tentative corrective burns and hovering before drifting sideways and crashing. The reward curve in the label jumps noticeably, crossing zero for the first time around episodes 300–400.
+The DQN timelapse opens with the lander in full chaos: at episode 100 the agent has barely moved past random behaviour, immediately firing the main engine at the wrong angle and slamming into the ground within a few seconds. Rewards are deep in the negatives, often around -150 to -200. By episode 200–300 something clicks - the agent learns to at least stay airborne, making tentative corrective burns and hovering before drifting sideways and crashing. The reward curve in the label jumps noticeably, crossing zero for the first time around episodes 300–400.
 
-The middle snapshots (ep 400–600) are the most revealing. The DQN agent reaches the pad area reliably but overshoots — it descends too fast, overcorrects, and either tips over on landing or touches down with excessive lateral velocity. You can see it get *close* and then snatch defeat from the jaws of victory with a last-second overcorrection. This matches the Q-value overestimation problem: DQN inflates the value of aggressive actions, leading to twitchy throttle behaviour.
+The middle snapshots (ep 400-600) are the most revealing. The DQN agent reaches the pad area reliably but overshoots - it descends too fast, overcorrects, and either tips over on landing or touches down with excessive lateral velocity. You can see it get *close* and then snatch defeat from the jaws of victory with a last-second overcorrection. This matches the Q-value overestimation problem: DQN inflates the value of aggressive actions, leading to twitchy throttle behaviour.
 
-From episode 700 onward the landings become cleaner. By episode 1000 the DQN agent is producing solid landings with rewards mostly in the 200–260 range, but there is still visible jitter in the thruster burns — short bursts followed by over-compensation — rather than smooth continuous control.
+From episode 700 onward the landings become cleaner. By episode 1000 the DQN agent is producing solid landings with rewards mostly in the 200-260 range, but there is still visible jitter in the thruster burns - short bursts followed by over-compensation - rather than smooth continuous control.
 
-### DDQN — `videos/ddqn_timelapse.mp4`
+### DDQN - `videos/ddqn_timelapse.mp4`
+<video src="https://github.com/prakadeesh01/lunarlander-dqn-ddqn/raw/main/videos/ddqn_timelapse.mp4" controls width="700"></video>
 
-The DDQN timelapse tells a noticeably smoother story. The early episodes (100–200) look similar to DQN — chaotic, negative rewards — because the buffer is still filling and neither agent has enough data to learn from. The divergence starts to appear around episode 300: the DDQN lander is more *committed* to its descent path. Rather than the erratic burst-and-pause firing of DQN, it applies steadier burns, suggesting the Q-values it is acting on are less inflated and therefore more consistent.
+The DDQN timelapse tells a noticeably smoother story. The early episodes (100-200) look similar to DQN - chaotic, negative rewards - because the buffer is still filling and neither agent has enough data to learn from. The divergence starts to appear around episode 300: the DDQN lander is more *committed* to its descent path. Rather than the erratic burst-and-pause firing of DQN, it applies steadier burns, suggesting the Q-values it is acting on are less inflated and therefore more consistent.
 
-The middle snapshots (ep 400–600) show DDQN landing or nearly landing more frequently than DQN at the same checkpoint. The label reward values confirm it: DDQN's snapshots in this range are typically 30–60 points higher than the equivalent DQN snapshots. The `argmax` decoupling means DDQN does not keep overcommitting to the main engine the way DQN does.
+The middle snapshots (ep 400-600) show DDQN landing or nearly landing more frequently than DQN at the same checkpoint. The label reward values confirm it: DDQN's snapshots in this range are typically 30-60 points higher than the equivalent DQN snapshots. The `argmax` decoupling means DDQN does not keep overcommitting to the main engine the way DQN does.
 
-By episode 800–1000 the DDQN landings look genuinely polished — centred on the pad, legs touching simultaneously, smooth deceleration from main engine with small corrective side burns. The final snapshot (ep 1000) consistently shows the kind of clean, deliberate landing the environment rewards most. The header reward values in the final clips regularly exceed 250.
+By episode 800–1000 the DDQN landings look genuinely polished - centred on the pad, legs touching simultaneously, smooth deceleration from main engine with small corrective side burns. The final snapshot (ep 1000) consistently shows the kind of clean, deliberate landing the environment rewards most. The header reward values in the final clips regularly exceed 250.
 
 ### Side-by-side takeaway
 
-Watching both videos back-to-back, the clearest difference is not speed of initial learning but *quality of the learned policy*. DQN gets there but remains visibly noisier. DDQN's reduced overestimation bias translates directly into smoother throttle decisions — which is exactly what Van Hasselt et al. predicted and what the statistical evaluation in Section 13 of the notebook quantifies.
+Watching both videos back-to-back, the clearest difference is not speed of initial learning but *quality of the learned policy*. DQN gets there but remains visibly noisier. DDQN's reduced overestimation bias translates directly into smoother throttle decisions - which is exactly what Van Hasselt et al. predicted and what the statistical evaluation in Section 13 of the notebook quantifies.
 
 ---
 
@@ -50,17 +52,14 @@ Watching both videos back-to-back, the clearest difference is not speed of initi
 
 All results are from greedy evaluation over 100 episodes after training (SEED=42).
 
-| Metric | DQN | DDQN |
-|--------|-----|------|
-| Solved at episode | — | — |
-| Best 100-ep avg (training) | — | — |
-| Eval mean ± std | — | — |
-| Eval median | — | — |
-| Success rate (≥ 200) | — | — |
-| Welch t-test (p-value) | — | — |
-| Mann-Whitney U (p-value) | — | — |
-
-> Fill in the `—` cells from your Section 15 summary output after running the notebook. The table structure matches the `dqn_eval` and `ddqn_eval` dicts returned by `evaluate_agent()`.
+| Metric | DQN | DDQN | Winner |
+|--------|-----|------|--------|
+| Solved at episode | 529 | 695 | - |
+| Eval mean reward | 85.8 | 159 | DDQN |
+| Success rate (%) | 11 | 44 | DDQN |
+| Q-value bias | High (overestimated) | Low (near-unbiased) | DDQN |
+| Training stability (std) | Higher | Lower | DDQN |
+| Implementation cost over DQN | - | 2 lines | - |
 
 ---
 
@@ -110,7 +109,7 @@ Sensitivity sweeps over γ ∈ {0.90, 0.95, 0.97, 0.99}, ε_decay ∈ {0.990, 0.
 ```
 lunarlander-dqn-ddqn/
 │
-├── rl_lunarlander_ddqn.ipynb     # Main notebook — all code, analysis, figures
+├── rl_lunarlander_ddqn.ipynb     # Main notebook - all code, analysis, figures
 │
 ├── checkpoints/
 │   ├── dqn_best.pth              # Best DQN checkpoint (highest 100-ep avg)
@@ -158,7 +157,7 @@ pip install -r requirements.txt
 
 Then open `rl_lunarlander_ddqn.ipynb` in VS Code or JupyterLab and run all cells top to bottom.
 
-The notebook is self-contained — it creates `checkpoints/`, `figures/`, `logs/`, and `videos/` automatically. Training takes approximately 25–45 minutes on CPU and 10–15 minutes on a mid-range GPU.
+The notebook is self-contained - it creates `checkpoints/`, `figures/`, `logs/`, and `videos/` automatically. Training takes approximately 25–45 minutes on CPU and 10–15 minutes on a mid-range GPU.
 
 ---
 
@@ -180,7 +179,7 @@ write_timelapse(frames, 'videos/dqn_best_single.mp4', fps=30)
 | Section | Content |
 |---------|---------|
 | 1 | Imports, seeds, device configuration |
-| 2 | Environment EDA — state distributions, random policy baseline |
+| 2 | Environment EDA - state distributions, random policy baseline |
 | 3 | Experience replay buffer |
 | 4 | Neural network architecture (DQNetwork) |
 | 5 | DQN agent (Mnih 2015) |
