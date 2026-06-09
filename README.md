@@ -25,7 +25,7 @@ The central question is whether that two-line change produces a measurably bette
 Each video is a 20-second MP4 showing the agent playing greedily at 10 checkpoints across 1000 training episodes (ep 100, 200, … 1000). Every frame is labelled with the agent name, episode number, and cumulative reward.
 
 ### DQN - `videos/dqn_timelapse.mp4`
-<video src="https://github.com/prakadeesh01/lunarlander-dqn-ddqn/raw/main/videos/dqn_timelapse.mp4" controls width="700"></video>
+![DQN Training Timelapse](videos/dqn_timelapse.gif)
 
 The DQN timelapse opens with the lander in full chaos: at episode 100 the agent has barely moved past random behaviour, immediately firing the main engine at the wrong angle and slamming into the ground within a few seconds. Rewards are deep in the negatives, often around -150 to -200. By episode 200–300 something clicks - the agent learns to at least stay airborne, making tentative corrective burns and hovering before drifting sideways and crashing. The reward curve in the label jumps noticeably, crossing zero for the first time around episodes 300–400.
 
@@ -34,7 +34,7 @@ The middle snapshots (ep 400-600) are the most revealing. The DQN agent reaches 
 From episode 700 onward the landings become cleaner. By episode 1000 the DQN agent is producing solid landings with rewards mostly in the 200-260 range, but there is still visible jitter in the thruster burns - short bursts followed by over-compensation - rather than smooth continuous control.
 
 ### DDQN - `videos/ddqn_timelapse.mp4`
-<video src="https://github.com/prakadeesh01/lunarlander-dqn-ddqn/raw/main/videos/ddqn_timelapse.mp4" controls width="700"></video>
+![DDQN Training Timelapse](videos/ddqn_timelapse.gif)
 
 The DDQN timelapse tells a noticeably smoother story. The early episodes (100-200) look similar to DQN - chaotic, negative rewards - because the buffer is still filling and neither agent has enough data to learn from. The divergence starts to appear around episode 300: the DDQN lander is more *committed* to its descent path. Rather than the erratic burst-and-pause firing of DQN, it applies steadier burns, suggesting the Q-values it is acting on are less inflated and therefore more consistent.
 
